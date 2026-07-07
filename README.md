@@ -1,4 +1,4 @@
-# Synexus Fullstack Inventory
+﻿# Synexus Fullstack Inventory
 
 A full-stack inventory management system built as an internship evaluation project. The project will grow over four weeks, starting with a clean foundation for client, server, documentation, and future CRUD integration.
 
@@ -46,7 +46,13 @@ npm install
 npm run dev
 ```
 
-The server will use Node.js and Express.js in future implementation steps.
+The Express API will run on `http://localhost:5000` by default.
+
+Health check endpoint:
+
+```http
+GET http://localhost:5000/api/health
+```
 
 ## Environment Variables
 
@@ -60,4 +66,7 @@ cp client/.env.example client/.env
 
 ### Server
 
-Server environment variables will be added in a later setup step.
+```bash
+cp server/.env.example server/.env
+```
+
