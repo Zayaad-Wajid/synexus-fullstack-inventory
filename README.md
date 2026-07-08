@@ -118,8 +118,34 @@ Step 5 adds a responsive inventory dashboard at `http://localhost:5173` with:
 - Product table with status badges
 - Empty, loading, and error states ready for API integration
 
-The form currently adds products to temporary local React state only. Backend API integration is planned for Step 6.
+The form now creates and updates records through the backend Product API. Refreshing the page fetches persisted products from PostgreSQL.
 
+
+## Week 1 Full-Stack Flow
+
+Run the complete Week 1 inventory module locally:
+
+```bash
+docker compose up -d
+```
+
+```bash
+cd server
+npm run dev
+```
+
+```bash
+cd client
+npm run dev
+```
+
+Open the frontend:
+
+```text
+http://localhost:5173
+```
+
+Create a product from the inventory form, then refresh the page and confirm the product still appears. Persisted records are stored in PostgreSQL through the backend Product API.
 ## Troubleshooting
 
 This project maps PostgreSQL to host port `55432` to avoid conflicts with other local PostgreSQL services that use `5432`.

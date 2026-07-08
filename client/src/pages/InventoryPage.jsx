@@ -1,23 +1,36 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
+import {
+  createProduct,
+  deleteProduct,
+  getApiErrorMessage,
+  getProducts,
+  updateProduct,
+} from "../api/productApi";
 import ErrorMessage from "../components/ErrorMessage";
 import ProductForm from "../components/ProductForm";
 import ProductTable from "../components/ProductTable";
 import StatCard from "../components/StatCard";
 
-function createLocalId() {
-  if (typeof crypto !== "undefined" && crypto.randomUUID) {
-    return crypto.randomUUID();
+function SuccessMessage({ message }) {
+  if (!message) {
+    return null;
   }
 
-  return `local-${Date.now()}`;
+  return (
+    <div className="rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800">
+      {message}
+    </div>
+  );
 }
 
 function InventoryPage() {
-  // Temporary UI state for Step 5. Replaced with API-backed state in Step 6.
   const [products, setProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
+  const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+  const [editingProduct, setEditingProduct] = useState(null);
 
   const stats = useMemo(
     () => ({
@@ -29,34 +42,98 @@ function InventoryPage() {
     [products]
   );
 
-  async function handleCreateProduct(productData) {
-    setIsSubmitting(true);
-    setErrorMessage("");
+  async function fetchProducts({ showLoading = false } = {}) {
+    if (showLoading) {
+      setIsLoading(true);
+    }
 
     try {
-      const newProduct = {
-        id: createLocalId(),
-        ...productData,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
+      const response = await getProducts();
+      setProducts(response.data || []);
+      setError("");
+    } catch (apiError) {
+      setError(getApiErrorMessage(apiError));
+    } finally {
+      if (showLoading) {
+        setIsLoading(false);
+      }
+    }
+  }
 
-      setProducts((currentProducts) => [newProduct, ...currentProducts]);
+  useEffect(() => {
+    fetchProducts({ showLoading: true });
+  }, []);
+
+  useEffect(() => {
+    if (!successMessage) {
+      return undefined;
+    }
+
+    const timeoutId = window.setTimeout(() => {
+      setSuccessMessage("");
+    }, 3500);
+
+    return () => window.clearTimeout(timeoutId);
+  }, [successMessage]);
+
+  async function handleSubmitProduct(productData) {
+    setIsSubmitting(true);
+    setError("");
+    setSuccessMessage("");
+
+    try {
+      if (editingProduct) {
+        await updateProduct(editingProduct.id, productData);
+        await fetchProducts();
+        setEditingProduct(null);
+        setSuccessMessage("Product updated successfully.");
+      } else {
+        await createProduct(productData);
+        await fetchProducts();
+        setSuccessMessage("Product created successfully.");
+      }
+
       return { success: true };
-    } catch (error) {
-      setErrorMessage(error.message || "Unable to add product");
+    } catch (apiError) {
+      setError(getApiErrorMessage(apiError));
       return { success: false };
     } finally {
       setIsSubmitting(false);
     }
   }
 
-  function handleEditProduct() {}
+  function handleEditProduct(product) {
+    setEditingProduct(product);
+    setError("");
+    setSuccessMessage("");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
 
-  function handleDeleteProduct(productId) {
-    setProducts((currentProducts) =>
-      currentProducts.filter((product) => product.id !== productId)
-    );
+  function handleCancelEdit() {
+    setEditingProduct(null);
+    setError("");
+  }
+
+  async function handleDeleteProduct(productId) {
+    const confirmed = window.confirm("Delete this product from inventory?");
+
+    if (!confirmed) {
+      return;
+    }
+
+    setError("");
+    setSuccessMessage("");
+
+    try {
+      await deleteProduct(productId);
+      await fetchProducts();
+      if (editingProduct?.id === productId) {
+        setEditingProduct(null);
+      }
+      setSuccessMessage("Product deleted successfully.");
+    } catch (apiError) {
+      setError(getApiErrorMessage(apiError));
+    }
   }
 
   return (
@@ -67,7 +144,7 @@ function InventoryPage() {
           <div>
             <h1 className="text-3xl font-bold text-slate-950 sm:text-4xl">Inventory Management</h1>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600 sm:text-base">
-              Week 1 CRUD module layout for creating products, reviewing inventory status, and preparing product records for operational workflows.
+              Create, update, and manage product records backed by the PostgreSQL inventory database.
             </p>
           </div>
         </header>
@@ -79,9 +156,15 @@ function InventoryPage() {
           <StatCard label="Out of Stock" value={stats.outOfStock} />
         </section>
 
-        <ErrorMessage message={errorMessage} />
+        <ErrorMessage message={error} />
+        <SuccessMessage message={successMessage} />
 
-        <ProductForm onSubmit={handleCreateProduct} isSubmitting={isSubmitting} />
+        <ProductForm
+          onSubmit={handleSubmitProduct}
+          isSubmitting={isSubmitting}
+          editingProduct={editingProduct}
+          onCancelEdit={handleCancelEdit}
+        />
 
         <section className="flex flex-col gap-4">
           <div>
@@ -93,7 +176,7 @@ function InventoryPage() {
             products={products}
             onEdit={handleEditProduct}
             onDelete={handleDeleteProduct}
-            isLoading={false}
+            isLoading={isLoading}
           />
         </section>
       </div>

@@ -2,6 +2,14 @@
 
 Base URL: `http://localhost:5000/api`
 
+## Frontend API Configuration
+
+The React client reads the API base URL from `VITE_API_BASE_URL`. The default local value is:
+
+```env
+VITE_API_BASE_URL=http://localhost:5000/api
+```
+
 ## Health Endpoints
 
 | Method | Endpoint | Description |
