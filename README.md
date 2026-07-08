@@ -1,4 +1,4 @@
-﻿# Synexus Fullstack Inventory
+# Synexus Fullstack Inventory
 
 A full-stack inventory management system built as an internship evaluation project. The project will grow over four weeks, starting with a clean foundation for client, server, documentation, and future CRUD integration.
 
@@ -48,10 +48,28 @@ npm run dev
 
 The Express API will run on `http://localhost:5000` by default.
 
-Health check endpoint:
+Health check endpoints:
 
 ```http
 GET http://localhost:5000/api/health
+GET http://localhost:5000/api/health/db
+```
+
+## Database Setup
+
+Install PostgreSQL locally or use a hosted PostgreSQL database. Then create a local server environment file and set `DATABASE_URL`.
+
+```bash
+cp server/.env.example server/.env
+```
+
+```bash
+cd server
+npm install
+npx prisma generate
+npx prisma migrate dev --name init_product_model
+npm run db:seed
+npm run dev
 ```
 
 ## Environment Variables
@@ -69,4 +87,3 @@ cp client/.env.example client/.env
 ```bash
 cp server/.env.example server/.env
 ```
-
