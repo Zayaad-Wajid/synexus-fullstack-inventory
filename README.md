@@ -10,6 +10,7 @@ A full-stack inventory management system built as an internship evaluation proje
 - Database: PostgreSQL
 - ORM: Prisma
 - API client: Axios
+- Local database: Docker Compose
 
 ## Week 1 Goal
 
@@ -22,6 +23,7 @@ synexus-fullstack-inventory/
   client/
   server/
   docs/
+  docker-compose.yml
   README.md
   .gitignore
 ```
@@ -48,20 +50,21 @@ npm run dev
 
 The Express API will run on `http://localhost:5000` by default.
 
-Health check endpoints:
+## Database Setup with Docker
 
-```http
-GET http://localhost:5000/api/health
-GET http://localhost:5000/api/health/db
+Start the local PostgreSQL database from the project root:
+
+```bash
+docker compose up -d
 ```
 
-## Database Setup
-
-Install PostgreSQL locally or use a hosted PostgreSQL database. Then create a local server environment file and set `DATABASE_URL`.
+Create a local server environment file and confirm `DATABASE_URL` uses the Docker database port `55432`:
 
 ```bash
 cp server/.env.example server/.env
 ```
+
+Then prepare Prisma and start the backend:
 
 ```bash
 cd server
@@ -70,6 +73,50 @@ npx prisma generate
 npx prisma migrate dev --name init_product_model
 npm run db:seed
 npm run dev
+```
+
+## Health Checks
+
+Backend health:
+
+```http
+GET http://localhost:5000/api/health
+```
+
+Database health:
+
+```http
+GET http://localhost:5000/api/health/db
+```
+
+
+## Product API
+
+Week 1 backend CRUD API is complete. Product endpoints are mounted under `/api/products`.
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| GET | `/api/products` | Fetch all products. |
+| GET | `/api/products/:id` | Fetch one product by ID. |
+| POST | `/api/products` | Create a product. |
+| PATCH | `/api/products/:id` | Update a product. |
+| DELETE | `/api/products/:id` | Delete a product. |
+
+See `docs/api.md` for request and response examples.
+## Troubleshooting
+
+This project maps PostgreSQL to host port `55432` to avoid conflicts with other local PostgreSQL services that use `5432`.
+
+If the container name already exists from a manual Docker run, remove it first:
+
+```bash
+docker rm -f synexus-postgres
+```
+
+Then start the database again:
+
+```bash
+docker compose up -d
 ```
 
 ## Environment Variables
@@ -86,4 +133,13 @@ cp client/.env.example client/.env
 
 ```bash
 cp server/.env.example server/.env
+```
+
+Server defaults:
+
+```env
+PORT=5000
+NODE_ENV=development
+CLIENT_URL=http://localhost:5173
+DATABASE_URL="postgresql://postgres:postgres@127.0.0.1:55432/synexus_inventory?schema=public"
 ```

@@ -1,7 +1,23 @@
-﻿import { env } from "../config/env.js";
+import { env } from "../config/env.js";
+
+function getStatusCode(error, res) {
+  if (error.statusCode) {
+    return error.statusCode;
+  }
+
+  if (error.message === "SKU already exists") {
+    return 400;
+  }
+
+  if (error.message === "Product not found") {
+    return 404;
+  }
+
+  return res.statusCode === 200 ? 500 : res.statusCode;
+}
 
 export function errorHandler(err, _req, res, _next) {
-  const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
+  const statusCode = getStatusCode(err, res);
 
   const response = {
     success: false,
