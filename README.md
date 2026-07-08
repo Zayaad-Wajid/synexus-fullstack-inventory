@@ -16,6 +16,8 @@ A full-stack inventory management system built as an internship evaluation proje
 
 Build the foundation for the full-stack inventory management system with a professional repository structure and prepare the project for end-to-end CRUD integration in later steps.
 
+Step 5 builds the inventory UI with temporary React state. Step 6 will connect the UI to the backend Product API.
+
 ## Project Structure
 
 ```text
@@ -38,7 +40,11 @@ npm install
 npm run dev
 ```
 
-The client will run with Vite during development.
+Frontend local URL:
+
+```text
+http://localhost:5173
+```
 
 ### Server
 
@@ -89,7 +95,6 @@ Database health:
 GET http://localhost:5000/api/health/db
 ```
 
-
 ## Product API
 
 Week 1 backend CRUD API is complete. Product endpoints are mounted under `/api/products`.
@@ -103,6 +108,18 @@ Week 1 backend CRUD API is complete. Product endpoints are mounted under `/api/p
 | DELETE | `/api/products/:id` | Delete a product. |
 
 See `docs/api.md` for request and response examples.
+
+## Frontend Inventory UI
+
+Step 5 adds a responsive inventory dashboard at `http://localhost:5173` with:
+
+- Product creation form with client-side validation
+- Inventory stat cards
+- Product table with status badges
+- Empty, loading, and error states ready for API integration
+
+The form currently adds products to temporary local React state only. Backend API integration is planned for Step 6.
+
 ## Troubleshooting
 
 This project maps PostgreSQL to host port `55432` to avoid conflicts with other local PostgreSQL services that use `5432`.
@@ -127,6 +144,12 @@ Create local `.env` files from the provided examples before running each applica
 
 ```bash
 cp client/.env.example client/.env
+```
+
+Client defaults:
+
+```env
+VITE_API_BASE_URL=http://localhost:5000/api
 ```
 
 ### Server
