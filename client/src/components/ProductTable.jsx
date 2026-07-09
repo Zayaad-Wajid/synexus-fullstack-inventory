@@ -32,7 +32,6 @@ function ProductTable({ products, onEdit, onDelete, isLoading }) {
           <thead className="bg-slate-50">
             <tr>
               <th className="px-4 py-3 text-left font-semibold text-slate-600">Product</th>
-              <th className="px-4 py-3 text-left font-semibold text-slate-600">SKU</th>
               <th className="px-4 py-3 text-left font-semibold text-slate-600">Category</th>
               <th className="px-4 py-3 text-right font-semibold text-slate-600">Quantity</th>
               <th className="px-4 py-3 text-right font-semibold text-slate-600">Unit Price</th>
@@ -52,7 +51,6 @@ function ProductTable({ products, onEdit, onDelete, isLoading }) {
                     </div>
                   ) : null}
                 </td>
-                <td className="px-4 py-4 align-top font-mono text-xs text-slate-700">{product.sku}</td>
                 <td className="px-4 py-4 align-top text-slate-700">{product.category}</td>
                 <td className="px-4 py-4 text-right align-top font-medium text-slate-900">{product.quantity}</td>
                 <td className="px-4 py-4 text-right align-top text-slate-700">{formatCurrency(product.unitPrice)}</td>

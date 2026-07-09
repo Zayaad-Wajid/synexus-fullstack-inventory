@@ -27,6 +27,8 @@ VITE_API_BASE_URL=http://localhost:5000/api
 | PATCH | `/products/:id` | Update a product. |
 | DELETE | `/products/:id` | Delete a product. |
 
+Product prices are stored as numeric Decimal values in PostgreSQL and displayed as PKR on the frontend.
+
 ### Product Status Values
 
 - `IN_STOCK`
@@ -41,14 +43,13 @@ Request body:
 
 ```json
 {
-  "name": "Logitech MX Master 3S Mouse",
-  "sku": "ACC-MSE-001",
-  "category": "Accessories",
-  "quantity": 42,
-  "unitPrice": 99.99,
-  "supplier": "Logitech Distribution",
+  "name": "Wireless Mouse",
+  "category": "Electronics",
+  "quantity": 25,
+  "unitPrice": 2500,
+  "supplier": "Logitech",
   "status": "IN_STOCK",
-  "description": "Ergonomic wireless mouse for office and design workstations."
+  "description": "Ergonomic wireless mouse"
 }
 ```
 
@@ -60,16 +61,15 @@ Success response:
   "message": "Product created successfully",
   "data": {
     "id": "clxproductid001",
-    "name": "Logitech MX Master 3S Mouse",
-    "sku": "ACC-MSE-001",
-    "category": "Accessories",
-    "quantity": 42,
-    "unitPrice": "99.99",
-    "supplier": "Logitech Distribution",
+    "name": "Wireless Mouse",
+    "category": "Electronics",
+    "quantity": 25,
+    "unitPrice": "2500",
+    "supplier": "Logitech",
     "status": "IN_STOCK",
-    "description": "Ergonomic wireless mouse for office and design workstations.",
-    "createdAt": "2026-07-08T10:00:00.000Z",
-    "updatedAt": "2026-07-08T10:00:00.000Z"
+    "description": "Ergonomic wireless mouse",
+    "createdAt": "2026-07-09T10:00:00.000Z",
+    "updatedAt": "2026-07-09T10:00:00.000Z"
   }
 }
 ```
@@ -102,16 +102,15 @@ Success response:
   "data": [
     {
       "id": "clxproductid001",
-      "name": "Logitech MX Master 3S Mouse",
-      "sku": "ACC-MSE-001",
-      "category": "Accessories",
-      "quantity": 42,
-      "unitPrice": "99.99",
-      "supplier": "Logitech Distribution",
+      "name": "Wireless Mouse",
+      "category": "Electronics",
+      "quantity": 25,
+      "unitPrice": "2500",
+      "supplier": "Logitech",
       "status": "IN_STOCK",
-      "description": "Ergonomic wireless mouse for office and design workstations.",
-      "createdAt": "2026-07-08T10:00:00.000Z",
-      "updatedAt": "2026-07-08T10:00:00.000Z"
+      "description": "Ergonomic wireless mouse",
+      "createdAt": "2026-07-09T10:00:00.000Z",
+      "updatedAt": "2026-07-09T10:00:00.000Z"
     }
   ]
 }
@@ -129,16 +128,15 @@ Success response:
   "message": "Product fetched successfully",
   "data": {
     "id": "clxproductid001",
-    "name": "Logitech MX Master 3S Mouse",
-    "sku": "ACC-MSE-001",
-    "category": "Accessories",
-    "quantity": 42,
-    "unitPrice": "99.99",
-    "supplier": "Logitech Distribution",
+    "name": "Wireless Mouse",
+    "category": "Electronics",
+    "quantity": 25,
+    "unitPrice": "2500",
+    "supplier": "Logitech",
     "status": "IN_STOCK",
-    "description": "Ergonomic wireless mouse for office and design workstations.",
-    "createdAt": "2026-07-08T10:00:00.000Z",
-    "updatedAt": "2026-07-08T10:00:00.000Z"
+    "description": "Ergonomic wireless mouse",
+    "createdAt": "2026-07-09T10:00:00.000Z",
+    "updatedAt": "2026-07-09T10:00:00.000Z"
   }
 }
 ```
@@ -162,7 +160,7 @@ Request body:
 {
   "quantity": 12,
   "status": "LOW_STOCK",
-  "unitPrice": 89.99
+  "unitPrice": 2200
 }
 ```
 
@@ -174,16 +172,15 @@ Success response:
   "message": "Product updated successfully",
   "data": {
     "id": "clxproductid001",
-    "name": "Logitech MX Master 3S Mouse",
-    "sku": "ACC-MSE-001",
-    "category": "Accessories",
+    "name": "Wireless Mouse",
+    "category": "Electronics",
     "quantity": 12,
-    "unitPrice": "89.99",
-    "supplier": "Logitech Distribution",
+    "unitPrice": "2200",
+    "supplier": "Logitech",
     "status": "LOW_STOCK",
-    "description": "Ergonomic wireless mouse for office and design workstations.",
-    "createdAt": "2026-07-08T10:00:00.000Z",
-    "updatedAt": "2026-07-08T10:05:00.000Z"
+    "description": "Ergonomic wireless mouse",
+    "createdAt": "2026-07-09T10:00:00.000Z",
+    "updatedAt": "2026-07-09T10:05:00.000Z"
   }
 }
 ```

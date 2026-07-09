@@ -5,10 +5,6 @@ function getStatusCode(error, res) {
     return error.statusCode;
   }
 
-  if (error.message === "SKU already exists") {
-    return 400;
-  }
-
   if (error.message === "Product not found") {
     return 404;
   }

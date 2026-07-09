@@ -16,7 +16,6 @@ enum ProductStatus {
 model Product {
   id          String        @id @default(cuid())
   name        String
-  sku         String        @unique
   category    String
   quantity    Int           @default(0)
   unitPrice   Decimal       @db.Decimal(10, 2)

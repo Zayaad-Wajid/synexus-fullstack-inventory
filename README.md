@@ -107,7 +107,7 @@ Week 1 backend CRUD API is complete. Product endpoints are mounted under `/api/p
 | PATCH | `/api/products/:id` | Update a product. |
 | DELETE | `/api/products/:id` | Delete a product. |
 
-See `docs/api.md` for request and response examples.
+See `docs/api.md` for request and response examples. Product prices are stored as numeric Decimal values and displayed as PKR on the frontend.
 
 ## Frontend Inventory UI
 
@@ -115,7 +115,7 @@ Step 5 adds a responsive inventory dashboard at `http://localhost:5173` with:
 
 - Product creation form with client-side validation
 - Inventory stat cards
-- Product table with status badges
+- Product table with status badges and PKR pricing
 - Empty, loading, and error states ready for API integration
 
 The form now creates and updates records through the backend Product API. Refreshing the page fetches persisted products from PostgreSQL.

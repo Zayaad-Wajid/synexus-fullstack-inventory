@@ -1,14 +1,25 @@
 export function formatCurrency(value) {
+  if (value === null || value === undefined || value === "") {
+    return new Intl.NumberFormat("en-PK", {
+      style: "currency",
+      currency: "PKR",
+      maximumFractionDigits: 0,
+    }).format(0);
+  }
+
   const amount = Number(value);
 
   if (!Number.isFinite(amount)) {
-    return "$0.00";
+    return new Intl.NumberFormat("en-PK", {
+      style: "currency",
+      currency: "PKR",
+      maximumFractionDigits: 0,
+    }).format(0);
   }
 
-  return new Intl.NumberFormat("en-US", {
+  return new Intl.NumberFormat("en-PK", {
     style: "currency",
-    currency: "USD",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
+    currency: "PKR",
+    maximumFractionDigits: 0,
   }).format(amount);
 }

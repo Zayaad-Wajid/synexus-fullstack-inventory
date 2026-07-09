@@ -4,7 +4,6 @@ const productStatusSchema = z.enum(["IN_STOCK", "LOW_STOCK", "OUT_OF_STOCK"]);
 
 const productFields = {
   name: z.string().trim().min(2, "Name must be at least 2 characters"),
-  sku: z.string().trim().min(2, "SKU must be at least 2 characters"),
   category: z.string().trim().min(1, "Category is required"),
   quantity: z.coerce
     .number()

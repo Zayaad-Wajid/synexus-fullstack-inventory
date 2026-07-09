@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 
 const initialFormData = {
   name: "",
-  sku: "",
   category: "",
   quantity: "",
   unitPrice: "",
@@ -20,7 +19,6 @@ function getFormDataFromProduct(product) {
 
   return {
     name: product.name || "",
-    sku: product.sku || "",
     category: product.category || "",
     quantity: product.quantity?.toString() ?? "",
     unitPrice: product.unitPrice?.toString() ?? "",
@@ -35,10 +33,6 @@ function validateForm(formData) {
 
   if (!formData.name.trim()) {
     errors.name = "Name is required";
-  }
-
-  if (!formData.sku.trim()) {
-    errors.sku = "SKU is required";
   }
 
   if (!formData.category.trim()) {
@@ -105,7 +99,6 @@ function ProductForm({ onSubmit, isSubmitting, editingProduct, onCancelEdit }) {
 
     const payload = {
       name: formData.name.trim(),
-      sku: formData.sku.trim(),
       category: formData.category.trim(),
       quantity: Number(formData.quantity),
       unitPrice: Number(formData.unitPrice),
@@ -165,23 +158,10 @@ function ProductForm({ onSubmit, isSubmitting, editingProduct, onCancelEdit }) {
             name="name"
             value={formData.name}
             onChange={handleChange}
-            placeholder="Wireless Keyboard"
+            placeholder="Wireless Mouse"
             disabled={isSubmitting}
           />
           <FieldError message={errors.name} />
-        </label>
-
-        <label className={labelClass}>
-          SKU
-          <input
-            className={inputClass}
-            name="sku"
-            value={formData.sku}
-            onChange={handleChange}
-            placeholder="ACC-KEY-001"
-            disabled={isSubmitting}
-          />
-          <FieldError message={errors.sku} />
         </label>
 
         <label className={labelClass}>
@@ -191,7 +171,7 @@ function ProductForm({ onSubmit, isSubmitting, editingProduct, onCancelEdit }) {
             name="category"
             value={formData.category}
             onChange={handleChange}
-            placeholder="Accessories"
+            placeholder="Electronics"
             disabled={isSubmitting}
           />
           <FieldError message={errors.category} />
@@ -214,7 +194,7 @@ function ProductForm({ onSubmit, isSubmitting, editingProduct, onCancelEdit }) {
         </label>
 
         <label className={labelClass}>
-          Unit Price
+          Unit Price (PKR)
           <input
             className={inputClass}
             name="unitPrice"
@@ -223,7 +203,7 @@ function ProductForm({ onSubmit, isSubmitting, editingProduct, onCancelEdit }) {
             step="0.01"
             value={formData.unitPrice}
             onChange={handleChange}
-            placeholder="79.99"
+            placeholder="2500"
             disabled={isSubmitting}
           />
           <FieldError message={errors.unitPrice} />
@@ -236,7 +216,7 @@ function ProductForm({ onSubmit, isSubmitting, editingProduct, onCancelEdit }) {
             name="supplier"
             value={formData.supplier}
             onChange={handleChange}
-            placeholder="Supplier name"
+            placeholder="Logitech"
             disabled={isSubmitting}
           />
         </label>
@@ -258,14 +238,14 @@ function ProductForm({ onSubmit, isSubmitting, editingProduct, onCancelEdit }) {
           </select>
         </label>
 
-        <label className={`${labelClass} md:col-span-2 xl:col-span-1`}>
+        <label className={`${labelClass} md:col-span-2`}>
           Description
           <textarea
             className={`${inputClass} min-h-24 resize-y`}
             name="description"
             value={formData.description}
             onChange={handleChange}
-            placeholder="Optional product notes"
+            placeholder="Ergonomic wireless mouse"
             disabled={isSubmitting}
           />
         </label>
