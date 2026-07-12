@@ -1,6 +1,6 @@
-<img width="1874" height="960" alt="image" src="https://github.com/user-attachments/assets/0809464a-da7f-4c39-baa0-f7f16613df8c" /># Screenshot Placeholders
-
 Week 1 demo:
+
+<img width="1874" height="960" alt="image" src="https://github.com/user-attachments/assets/0809464a-da7f-4c39-baa0-f7f16613df8c" /># 
 
 **Add Prodcut**
 
