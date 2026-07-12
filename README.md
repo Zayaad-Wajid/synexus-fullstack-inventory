@@ -1,190 +1,84 @@
 # Synexus Fullstack Inventory
 
-A full-stack inventory management system built as an internship evaluation project. The project will grow over four weeks, starting with a clean foundation for client, server, documentation, and future CRUD integration.
+A professional full-stack inventory management project built for an internship evaluation. Week 1 focuses on end-to-end setup and core CRUD integration: a user can create a product from the React frontend, the Express API stores it in PostgreSQL through Prisma, and the frontend fetches the updated list so records remain visible after refresh.
 
 ## Tech Stack
 
 - Frontend: React + Vite
 - Styling: Tailwind CSS
+- API client: Axios
 - Backend: Node.js + Express.js
 - Database: PostgreSQL
 - ORM: Prisma
-- API client: Axios
 - Local database: Docker Compose
 
-## Week 1 Goal
+## Week 1 Feature Summary
 
-Build the foundation for the full-stack inventory management system with a professional repository structure and prepare the project for end-to-end CRUD integration in later steps.
+- Clean repository structure with separate `client`, `server`, and `docs` folders
+- Express API with health checks, CORS, centralized errors, validation, routes, controllers, and services
+- PostgreSQL database managed through Prisma migrations and seed data
+- Product CRUD API without authentication, pagination, filtering, or file uploads
+- React inventory page with form validation, loading/error/success states, edit mode, delete confirmation, and PKR currency display
+- Frontend creates, updates, deletes, and fetches products through the backend API
 
-Step 5 builds the inventory UI with temporary React state. Step 6 will connect the UI to the backend Product API.
+Product prices are stored as numeric Prisma Decimal values and displayed as PKR on the frontend.
 
-## Project Structure
+## Folder Structure
 
 ```text
 synexus-fullstack-inventory/
   client/
+    src/
+      api/
+      components/
+      pages/
+      utils/
+    .env.example
   server/
+    prisma/
+    src/
+      config/
+      controllers/
+      middleware/
+      routes/
+      services/
+      validators/
+    .env.example
   docs/
+    api.md
+    demo-notes.md
+    screenshots/
   docker-compose.yml
   README.md
   .gitignore
 ```
 
-## Setup Instructions
+## Prerequisites
 
-### Client
-
-```bash
-cd client
-npm install
-npm run dev
-```
-
-Frontend local URL:
-
-```text
-http://localhost:5173
-```
-
-### Server
-
-```bash
-cd server
-npm install
-npm run dev
-```
-
-The Express API will run on `http://localhost:5000` by default.
-
-## Database Setup with Docker
-
-Start the local PostgreSQL database from the project root:
-
-```bash
-docker compose up -d
-```
-
-Create a local server environment file and confirm `DATABASE_URL` uses the Docker database port `55432`:
-
-```bash
-cp server/.env.example server/.env
-```
-
-Then prepare Prisma and start the backend:
-
-```bash
-cd server
-npm install
-npx prisma generate
-npx prisma migrate dev --name init_product_model
-npm run db:seed
-npm run dev
-```
-
-## Health Checks
-
-Backend health:
-
-```http
-GET http://localhost:5000/api/health
-```
-
-Database health:
-
-```http
-GET http://localhost:5000/api/health/db
-```
-
-## Product API
-
-Week 1 backend CRUD API is complete. Product endpoints are mounted under `/api/products`.
-
-| Method | Endpoint | Description |
-| --- | --- | --- |
-| GET | `/api/products` | Fetch all products. |
-| GET | `/api/products/:id` | Fetch one product by ID. |
-| POST | `/api/products` | Create a product. |
-| PATCH | `/api/products/:id` | Update a product. |
-| DELETE | `/api/products/:id` | Delete a product. |
-
-See `docs/api.md` for request and response examples. Product prices are stored as numeric Decimal values and displayed as PKR on the frontend.
-
-## Frontend Inventory UI
-
-Step 5 adds a responsive inventory dashboard at `http://localhost:5173` with:
-
-- Product creation form with client-side validation
-- Inventory stat cards
-- Product table with status badges and PKR pricing
-- Empty, loading, and error states ready for API integration
-
-The form now creates and updates records through the backend Product API. Refreshing the page fetches persisted products from PostgreSQL.
-
-
-## Week 1 Full-Stack Flow
-
-Run the complete Week 1 inventory module locally:
-
-```bash
-docker compose up -d
-```
-
-```bash
-cd server
-npm run dev
-```
-
-```bash
-cd client
-npm run dev
-```
-
-Open the frontend:
-
-```text
-http://localhost:5173
-```
-
-Create a product from the inventory form, then refresh the page and confirm the product still appears. Persisted records are stored in PostgreSQL through the backend Product API.
-## Troubleshooting
-
-This project maps PostgreSQL to host port `55432` to avoid conflicts with other local PostgreSQL services that use `5432`.
-
-If the container name already exists from a manual Docker run, remove it first:
-
-```bash
-docker rm -f synexus-postgres
-```
-
-Then start the database again:
-
-```bash
-docker compose up -d
-```
+- Node.js 18 or newer
+- npm
+- Docker Desktop or Docker Engine with Docker Compose
+- A terminal that can run commands from the project root
 
 ## Environment Variables
 
-Create local `.env` files from the provided examples before running each application.
+Create local `.env` files from the examples. The real `.env` files are ignored by git.
 
-### Client
+### Frontend
 
 ```bash
 cp client/.env.example client/.env
 ```
 
-Client defaults:
-
 ```env
 VITE_API_BASE_URL=http://localhost:5000/api
 ```
 
-### Server
+### Backend
 
 ```bash
 cp server/.env.example server/.env
 ```
-
-Server defaults:
 
 ```env
 PORT=5000
@@ -192,3 +86,160 @@ NODE_ENV=development
 CLIENT_URL=http://localhost:5173
 DATABASE_URL="postgresql://postgres:postgres@127.0.0.1:55432/synexus_inventory?schema=public"
 ```
+
+## Docker PostgreSQL Setup
+
+Start PostgreSQL from the project root:
+
+```bash
+docker compose up -d
+```
+
+The database uses host port `55432` to avoid conflicts with local PostgreSQL services on `5432`.
+
+## Backend Setup
+
+```bash
+cd server
+npm install
+npx prisma generate
+npx prisma migrate dev
+npm run db:seed
+npm run dev
+```
+
+Backend URL:
+
+```text
+http://localhost:5000
+```
+
+Health checks:
+
+```http
+GET http://localhost:5000/api/health
+GET http://localhost:5000/api/health/db
+```
+
+## Frontend Setup
+
+```bash
+cd client
+npm install
+npm run dev
+```
+
+Frontend URL:
+
+```text
+http://localhost:5173
+```
+
+## Run The Full App
+
+Use three terminals:
+
+```bash
+docker compose up -d
+```
+
+```bash
+cd server
+npm run dev
+```
+
+```bash
+cd client
+npm run dev
+```
+
+Open `http://localhost:5173` and use the inventory form.
+
+## Verify CRUD Persistence
+
+1. Open the frontend at `http://localhost:5173`.
+2. Create a product with a name, category, quantity, unit price in PKR, supplier, status, and description.
+3. Confirm the product appears in the table after submission.
+4. Refresh the browser.
+5. Confirm the product still appears, proving it was persisted in PostgreSQL.
+6. Edit the product and confirm the updated values appear.
+7. Delete the product and confirm it is removed from the refreshed list.
+
+## API Documentation
+
+Full API documentation is available in `docs/api.md`.
+
+Product endpoints:
+
+| Method | Endpoint | Description |
+| --- | --- | --- |
+| GET | `/api/products` | Fetch all products |
+| GET | `/api/products/:id` | Fetch one product |
+| POST | `/api/products` | Create a product |
+| PATCH | `/api/products/:id` | Update a product |
+| DELETE | `/api/products/:id` | Delete a product |
+
+## Demo Notes
+
+Week 1 demo walkthrough notes are available in `docs/demo-notes.md`.
+
+Screenshot placeholders are tracked in `docs/screenshots/README.md`.
+
+## Week 1 Evaluation Alignment
+
+- Repository structure: clear `client`, `server`, `docs`, Docker, and env example separation
+- API consumption: frontend API calls are isolated in `client/src/api/productApi.js`
+- CORS configuration: backend uses `CLIENT_URL` from environment configuration
+- State management: inventory page tracks products, loading, submitting, error, success, and editing state
+- Database integration: Prisma schema, migrations, seed data, PostgreSQL Docker service, and DB health endpoint are included
+
+## Common Troubleshooting
+
+### Port 55432 is already in use
+
+Update `docker-compose.yml` and `server/.env`, or stop the process already using the port.
+
+### Container name already exists
+
+If `synexus-postgres` already exists from a manual Docker run, remove it first:
+
+```bash
+docker rm -f synexus-postgres
+```
+
+Then start Docker Compose again:
+
+```bash
+docker compose up -d
+```
+
+### Backend cannot connect to the database
+
+Confirm Docker is running and the database is healthy:
+
+```bash
+docker compose ps
+```
+
+Then verify `server/.env` contains the `55432` database URL.
+
+### Frontend cannot reach the backend
+
+Confirm the backend is running on port `5000` and `client/.env` contains:
+
+```env
+VITE_API_BASE_URL=http://localhost:5000/api
+```
+
+### Prisma Client is out of date
+
+Regenerate the Prisma Client:
+
+```bash
+cd server
+npx prisma generate
+```
+
+## Evaluation Branches
+
+No separate evaluation branch setup is required for Week 1. The current branch contains the full Week 1 CRUD flow.
