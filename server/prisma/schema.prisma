@@ -13,6 +13,11 @@ enum ProductStatus {
   OUT_OF_STOCK
 }
 
+enum UserRole {
+  ADMIN
+  STAFF
+}
+
 model Product {
   id          String        @id @default(cuid())
   name        String
@@ -27,5 +32,18 @@ model Product {
 
   @@index([category])
   @@index([status])
+  @@index([createdAt])
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      UserRole @default(STAFF)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([role])
   @@index([createdAt])
 }

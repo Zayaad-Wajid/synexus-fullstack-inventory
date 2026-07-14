@@ -1,6 +1,14 @@
+import bcrypt from "bcryptjs";
 import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
+
+const demoAdmin = {
+  name: "Demo Admin",
+  email: "admin@synexus.test",
+  password: "Admin@12345",
+  role: "ADMIN",
+};
 
 const products = [
   {
@@ -53,10 +61,30 @@ const products = [
 async function main() {
   console.log("Starting database seed...");
 
+  const hashedPassword = await bcrypt.hash(demoAdmin.password, 12);
+
+  await prisma.user.upsert({
+    where: { email: demoAdmin.email },
+    update: {
+      name: demoAdmin.name,
+      password: hashedPassword,
+      role: demoAdmin.role,
+    },
+    create: {
+      name: demoAdmin.name,
+      email: demoAdmin.email,
+      password: hashedPassword,
+      role: demoAdmin.role,
+    },
+  });
+
   await prisma.product.deleteMany();
   await prisma.product.createMany({ data: products });
 
   console.log(`Seed completed successfully. Inserted ${products.length} products.`);
+  console.log("Sample test account:");
+  console.log(`Email: ${demoAdmin.email}`);
+  console.log(`Password: ${demoAdmin.password}`);
 }
 
 main()

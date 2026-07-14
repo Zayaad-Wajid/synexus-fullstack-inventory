@@ -17,7 +17,7 @@ A professional full-stack inventory management project built for an internship e
 - Clean repository structure with separate `client`, `server`, and `docs` folders
 - Express API with health checks, CORS, centralized errors, validation, routes, controllers, and services
 - PostgreSQL database managed through Prisma migrations and seed data
-- Product CRUD API without authentication, pagination, filtering, or file uploads
+- Week 1 Product CRUD API without route protection, pagination, filtering, or file uploads
 - React inventory page with form validation, loading/error/success states, edit mode, delete confirmation, and PKR currency display
 - Frontend creates, updates, deletes, and fetches products through the backend API
 
@@ -85,6 +85,9 @@ PORT=5000
 NODE_ENV=development
 CLIENT_URL=http://localhost:5173
 DATABASE_URL="postgresql://postgres:postgres@127.0.0.1:55432/synexus_inventory?schema=public"
+JWT_SECRET="replace-with-a-secure-secret"
+JWT_EXPIRES_IN="7d"
+COOKIE_NAME="synexus_token"
 ```
 
 ## Docker PostgreSQL Setup
@@ -165,6 +168,27 @@ Open `http://localhost:5173` and use the inventory form.
 6. Edit the product and confirm the updated values appear.
 7. Delete the product and confirm it is removed from the refreshed list.
 
+
+## Week 2 Authentication Foundation
+
+Week 2 adds the backend foundation for secure authentication. JWTs will be stored in an `httpOnly` cookie instead of `localStorage` or `sessionStorage`.
+
+Planned session persistence flow:
+
+- User logs in through `/api/auth/login`.
+- Backend sets the JWT in the `synexus_token` httpOnly cookie.
+- Frontend refreshes call `GET /api/auth/me` to restore the authenticated session.
+- Protected interfaces will be added after the auth endpoints are implemented.
+
+Sample test account seeded for evaluators:
+
+```text
+Email: admin@synexus.test
+Password: Admin@12345
+Role: ADMIN
+```
+
+Authentication endpoints are documented as placeholders in `docs/api.md` and will be implemented in the next step.
 ## API Documentation
 
 Full API documentation is available in `docs/api.md`.

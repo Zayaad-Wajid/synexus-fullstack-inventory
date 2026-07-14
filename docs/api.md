@@ -17,6 +17,27 @@ VITE_API_BASE_URL=http://localhost:5000/api
 | GET | `/health` | Checks whether the API is running. |
 | GET | `/health/db` | Checks whether the API can connect to PostgreSQL through Prisma. |
 
+
+## Authentication API
+
+Authentication endpoints are planned for Week 2 Step 2. JWTs will be issued by the backend and stored in an `httpOnly` cookie named by `COOKIE_NAME`.
+
+| Method | Endpoint | Description | Status |
+| --- | --- | --- | --- |
+| POST | `/auth/register` | Register a new user account. | Placeholder |
+| POST | `/auth/login` | Authenticate a user and set the auth cookie. | Placeholder |
+| GET | `/auth/me` | Return the current authenticated user for session persistence after refresh. | Placeholder |
+| POST | `/auth/logout` | Clear the auth cookie. | Placeholder |
+
+Sample seeded test account:
+
+```text
+Email: admin@synexus.test
+Password: Admin@12345
+Role: ADMIN
+```
+
+These endpoints are not implemented yet. Product routes remain unprotected until the authentication flow is completed in a later Week 2 step.
 ## Product Endpoints
 
 | Method | Endpoint | Description |
