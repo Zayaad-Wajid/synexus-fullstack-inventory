@@ -1,25 +1,28 @@
 # Synexus Fullstack Inventory
 
-A professional full-stack inventory management project built for an internship evaluation. Week 1 focuses on end-to-end setup and core CRUD integration: a user can create a product from the React frontend, the Express API stores it in PostgreSQL through Prisma, and the frontend fetches the updated list so records remain visible after refresh.
+A professional full-stack inventory management project built for an internship evaluation. Week 1 delivers the end-to-end Product CRUD flow, and Week 2 adds the foundation for secure authentication with JWTs stored in httpOnly cookies.
 
 ## Tech Stack
 
 - Frontend: React + Vite
+- Routing: React Router
 - Styling: Tailwind CSS
 - API client: Axios
 - Backend: Node.js + Express.js
+- Authentication: JWT + bcrypt + httpOnly cookies
 - Database: PostgreSQL
 - ORM: Prisma
 - Local database: Docker Compose
 
-## Week 1 Feature Summary
+## Feature Summary
 
 - Clean repository structure with separate `client`, `server`, and `docs` folders
 - Express API with health checks, CORS, centralized errors, validation, routes, controllers, and services
 - PostgreSQL database managed through Prisma migrations and seed data
-- Week 1 Product CRUD API without route protection, pagination, filtering, or file uploads
+- Product CRUD API backed by PostgreSQL and Prisma
 - React inventory page with form validation, loading/error/success states, edit mode, delete confirmation, and PKR currency display
 - Frontend creates, updates, deletes, and fetches products through the backend API
+- Week 2 login and registration screens call the backend auth API and rely on httpOnly cookies for session storage
 
 Product prices are stored as numeric Prisma Decimal values and displayed as PKR on the frontend.
 
@@ -138,6 +141,15 @@ Frontend URL:
 http://localhost:5173
 ```
 
+Frontend routes:
+
+| Route | Purpose |
+| --- | --- |
+| `/` | Redirects to `/inventory` |
+| `/login` | Sign in with an existing account |
+| `/register` | Create a staff account |
+| `/inventory` | Product inventory workspace |
+
 ## Run The Full App
 
 Use three terminals:
@@ -156,24 +168,13 @@ cd client
 npm run dev
 ```
 
-Open `http://localhost:5173` and use the inventory form.
+Open `http://localhost:5173/login`, sign in, and use the inventory page.
 
-## Verify CRUD Persistence
+## Week 2 Authentication
 
-1. Open the frontend at `http://localhost:5173`.
-2. Create a product with a name, category, quantity, unit price in PKR, supplier, status, and description.
-3. Confirm the product appears in the table after submission.
-4. Refresh the browser.
-5. Confirm the product still appears, proving it was persisted in PostgreSQL.
-6. Edit the product and confirm the updated values appear.
-7. Delete the product and confirm it is removed from the refreshed list.
+Authentication uses JWTs stored in an httpOnly cookie named `synexus_token`. The frontend does not store the JWT in `localStorage` or `sessionStorage`; Axios sends the cookie automatically with API requests using `withCredentials: true`.
 
-
-## Week 2 Backend Authentication
-
-Week 2 backend authentication endpoints are available under `/api/auth`. JWTs are stored in an `httpOnly` cookie instead of `localStorage` or `sessionStorage`, so the token is not exposed to frontend JavaScript.
-
-Implemented endpoints:
+Implemented backend endpoints:
 
 | Method | Endpoint | Purpose |
 | --- | --- | --- |
@@ -181,6 +182,11 @@ Implemented endpoints:
 | POST | `/api/auth/login` | Authenticate a user and set the auth cookie |
 | GET | `/api/auth/me` | Fetch the current user from the auth cookie for session persistence |
 | POST | `/api/auth/logout` | Clear the auth cookie |
+
+Frontend auth screens implemented in Week 2 Step 4:
+
+- `http://localhost:5173/login`
+- `http://localhost:5173/register`
 
 Sample test account seeded for evaluators:
 
@@ -190,34 +196,29 @@ Password: Admin@12345
 Role: ADMIN
 ```
 
-Postman testing notes:
+Session persistence after refresh through `GET /api/auth/me` and protected frontend route guards are planned for the next Week 2 step.
 
-1. Run `npm run db:seed` after applying migrations so the demo admin exists.
-2. Send `POST http://localhost:5000/api/auth/login` with the sample email and password.
-3. Confirm the JSON response includes `data.user` but does not include a JWT token.
-4. In Postman cookies, confirm `synexus_token` is set as an httpOnly cookie.
-5. Send `GET http://localhost:5000/api/auth/me` using the same Postman cookie jar to verify session persistence.
-6. Send `POST http://localhost:5000/api/auth/logout` to clear the auth cookie.
-
-Product API routes now require authentication. Read/create/update product routes require any logged-in user, while deleting products requires the ADMIN role.
-
-## Week 2 Protected API Testing
+## Protected API Testing
 
 Product routes are protected by the JWT httpOnly cookie.
 
 1. Try `GET http://localhost:5000/api/products` before login and expect `401 Authentication required`.
-2. Login with the seeded admin account:
-
-```text
-Email: admin@synexus.test
-Password: Admin@12345
-```
-
-3. Retry `GET http://localhost:5000/api/products` with the same Postman cookie jar and expect success.
+2. Login with the seeded admin account.
+3. Retry `GET http://localhost:5000/api/products` with the same browser or API client cookie jar and expect success.
 4. Register or login as a STAFF user, then try `DELETE http://localhost:5000/api/products/:id` and expect `403 You do not have permission to perform this action`.
 5. Login as the ADMIN user and retry the delete request. ADMIN users can delete products.
 
-In browsers and API clients, cookies/credentials must be included with protected requests.
+## Verify CRUD Persistence
+
+1. Open the frontend at `http://localhost:5173/login`.
+2. Sign in with the sample admin account.
+3. Create a product with a name, category, quantity, unit price in PKR, supplier, status, and description.
+4. Confirm the product appears in the table after submission.
+5. Refresh the browser.
+6. Confirm the product still appears, proving it was persisted in PostgreSQL.
+7. Edit the product and confirm the updated values appear.
+8. Delete the product and confirm it is removed from the refreshed list.
+
 ## API Documentation
 
 Full API documentation is available in `docs/api.md`.
@@ -226,25 +227,26 @@ Product endpoints:
 
 | Method | Endpoint | Description |
 | --- | --- | --- |
-| GET | `/api/products` | Fetch all products |
-| GET | `/api/products/:id` | Fetch one product |
-| POST | `/api/products` | Create a product |
-| PATCH | `/api/products/:id` | Update a product |
+| GET | `/api/products` | Fetch all products, authenticated users only |
+| GET | `/api/products/:id` | Fetch one product, authenticated users only |
+| POST | `/api/products` | Create a product, authenticated users only |
+| PATCH | `/api/products/:id` | Update a product, authenticated users only |
 | DELETE | `/api/products/:id` | Delete a product, ADMIN only |
 
 ## Demo Notes
 
-Week 1 demo walkthrough notes are available in `docs/demo-notes.md`.
+Week 1 and Week 2 demo walkthrough notes are available in `docs/demo-notes.md`.
 
 Screenshot placeholders are tracked in `docs/screenshots/README.md`.
 
-## Week 1 Evaluation Alignment
+## Evaluation Alignment
 
 - Repository structure: clear `client`, `server`, `docs`, Docker, and env example separation
-- API consumption: frontend API calls are isolated in `client/src/api/productApi.js`
-- CORS configuration: backend uses `CLIENT_URL` from environment configuration
+- API consumption: frontend API calls are isolated in `client/src/api`
+- CORS configuration: backend uses `CLIENT_URL` and supports credentials for httpOnly cookie auth
 - State management: inventory page tracks products, loading, submitting, error, success, and editing state
 - Database integration: Prisma schema, migrations, seed data, PostgreSQL Docker service, and DB health endpoint are included
+- Authentication: JWT cookie flow, login/register screens, sample account, and protected backend product routes are included
 
 ## Common Troubleshooting
 
@@ -284,6 +286,16 @@ Confirm the backend is running on port `5000` and `client/.env` contains:
 VITE_API_BASE_URL=http://localhost:5000/api
 ```
 
+Also confirm the backend `CLIENT_URL` matches the frontend origin:
+
+```env
+CLIENT_URL=http://localhost:5173
+```
+
+### Protected requests return 401 after login
+
+Make sure frontend requests use the shared Axios client in `client/src/api/apiClient.js`, which includes `withCredentials: true`.
+
 ### Prisma Client is out of date
 
 Regenerate the Prisma Client:
@@ -295,4 +307,4 @@ npx prisma generate
 
 ## Evaluation Branches
 
-No separate evaluation branch setup is required for Week 1. The current branch contains the full Week 1 CRUD flow.
+No separate evaluation branch setup is required. The current branch contains the Week 1 CRUD flow and Week 2 authentication progress.

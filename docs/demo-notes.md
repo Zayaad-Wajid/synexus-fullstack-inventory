@@ -1,8 +1,8 @@
-# Week 1 Demo Notes
+# Demo Notes
 
-Use this walkthrough to record or present the Week 1 end-to-end CRUD flow.
+Use this walkthrough to record or present the current full-stack evaluation flow.
 
-## Demo Walkthrough
+## Start The App
 
 1. Start the PostgreSQL database from the project root.
 
@@ -24,13 +24,50 @@ cd client
 npm run dev
 ```
 
-4. Open the inventory page.
+## Week 2 Authentication Walkthrough
+
+1. Open the login page.
 
 ```text
-http://localhost:5173
+http://localhost:5173/login
 ```
 
-5. Create a product from the form.
+2. Sign in with the seeded admin account.
+
+```text
+Email: admin@synexus.test
+Password: Admin@12345
+```
+
+3. Confirm successful login redirects to the inventory page.
+
+```text
+http://localhost:5173/inventory
+```
+
+4. Confirm the inventory list loads through protected API requests using the httpOnly cookie.
+
+5. Open the registration page.
+
+```text
+http://localhost:5173/register
+```
+
+6. Register a new staff account with a valid name, email, and password.
+
+7. Confirm successful registration redirects to the inventory page.
+
+8. In an API client, use the staff account to try `DELETE /api/products/:id` and confirm the backend returns `403` because delete requires ADMIN.
+
+## Week 1 CRUD Walkthrough
+
+1. Open the inventory page after login.
+
+```text
+http://localhost:5173/inventory
+```
+
+2. Create a product from the form.
 
 Example values:
 
@@ -44,22 +81,24 @@ Status: IN_STOCK
 Description: Ergonomic wireless mouse
 ```
 
-6. Confirm the product appears in the product table.
+3. Confirm the product appears in the product table.
 
-7. Refresh the browser page.
+4. Refresh the browser page.
 
-8. Confirm the product still appears after refresh, showing that it was persisted in PostgreSQL.
+5. Confirm the product still appears after refresh, showing that it was persisted in PostgreSQL.
 
-9. Click Edit, update a field such as quantity or status, and submit the update.
+6. Click Edit, update a field such as quantity or status, and submit the update.
 
-10. Confirm the product row updates after the backend request completes.
+7. Confirm the product row updates after the backend request completes.
 
-11. Click Delete, confirm the browser prompt, and verify the product is removed from the list.
+8. Click Delete while signed in as ADMIN, confirm the browser prompt, and verify the product is removed from the list.
 
 ## Demo Focus
 
-- Frontend form submission
-- Backend API request through Axios
+- Login and registration screens with validation and readable errors
+- JWT stored in an httpOnly cookie, not browser storage
+- Protected backend product routes using cookie credentials
+- Frontend form submission through Axios
 - PostgreSQL persistence through Prisma
 - Refetching product list after create, update, and delete
 - Error, success, loading, and editing states in the UI

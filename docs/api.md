@@ -22,7 +22,7 @@ VITE_API_BASE_URL=http://localhost:5000/api
 
 JWTs are signed by the backend and stored in an `httpOnly` cookie. The JWT is never returned in the JSON response body. Browser clients must send credentials/cookies with auth requests.
 
-Frontend Axios requests should use `withCredentials: true` when calling protected auth endpoints in later frontend auth steps.
+The frontend shared Axios client uses `withCredentials: true` so the browser sends the httpOnly cookie with protected requests.
 
 ### Register
 
