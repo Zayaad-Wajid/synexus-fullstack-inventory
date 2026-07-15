@@ -169,16 +169,18 @@ Open `http://localhost:5173` and use the inventory form.
 7. Delete the product and confirm it is removed from the refreshed list.
 
 
-## Week 2 Authentication Foundation
+## Week 2 Backend Authentication
 
-Week 2 adds the backend foundation for secure authentication. JWTs will be stored in an `httpOnly` cookie instead of `localStorage` or `sessionStorage`.
+Week 2 backend authentication endpoints are available under `/api/auth`. JWTs are stored in an `httpOnly` cookie instead of `localStorage` or `sessionStorage`, so the token is not exposed to frontend JavaScript.
 
-Planned session persistence flow:
+Implemented endpoints:
 
-- User logs in through `/api/auth/login`.
-- Backend sets the JWT in the `synexus_token` httpOnly cookie.
-- Frontend refreshes call `GET /api/auth/me` to restore the authenticated session.
-- Protected interfaces will be added after the auth endpoints are implemented.
+| Method | Endpoint | Purpose |
+| --- | --- | --- |
+| POST | `/api/auth/register` | Create a new staff account and set the auth cookie |
+| POST | `/api/auth/login` | Authenticate a user and set the auth cookie |
+| GET | `/api/auth/me` | Fetch the current user from the auth cookie for session persistence |
+| POST | `/api/auth/logout` | Clear the auth cookie |
 
 Sample test account seeded for evaluators:
 
@@ -188,7 +190,16 @@ Password: Admin@12345
 Role: ADMIN
 ```
 
-Authentication endpoints are documented as placeholders in `docs/api.md` and will be implemented in the next step.
+Postman testing notes:
+
+1. Run `npm run db:seed` after applying migrations so the demo admin exists.
+2. Send `POST http://localhost:5000/api/auth/login` with the sample email and password.
+3. Confirm the JSON response includes `data.user` but does not include a JWT token.
+4. In Postman cookies, confirm `synexus_token` is set as an httpOnly cookie.
+5. Send `GET http://localhost:5000/api/auth/me` using the same Postman cookie jar to verify session persistence.
+6. Send `POST http://localhost:5000/api/auth/logout` to clear the auth cookie.
+
+Product routes are intentionally still unprotected in this step. Protected interfaces will be added in a later Week 2 step.
 ## API Documentation
 
 Full API documentation is available in `docs/api.md`.

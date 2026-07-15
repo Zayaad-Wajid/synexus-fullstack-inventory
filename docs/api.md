@@ -20,14 +20,165 @@ VITE_API_BASE_URL=http://localhost:5000/api
 
 ## Authentication API
 
-Authentication endpoints are planned for Week 2 Step 2. JWTs will be issued by the backend and stored in an `httpOnly` cookie named by `COOKIE_NAME`.
+JWTs are signed by the backend and stored in an `httpOnly` cookie. The JWT is never returned in the JSON response body. Browser clients must send credentials/cookies with auth requests.
 
-| Method | Endpoint | Description | Status |
-| --- | --- | --- | --- |
-| POST | `/auth/register` | Register a new user account. | Placeholder |
-| POST | `/auth/login` | Authenticate a user and set the auth cookie. | Placeholder |
-| GET | `/auth/me` | Return the current authenticated user for session persistence after refresh. | Placeholder |
-| POST | `/auth/logout` | Clear the auth cookie. | Placeholder |
+Frontend Axios requests should use `withCredentials: true` when calling protected auth endpoints in later frontend auth steps.
+
+### Register
+
+`POST /api/auth/register`
+
+Request body:
+
+```json
+{
+  "name": "Demo Staff",
+  "email": "staff@synexus.test",
+  "password": "Staff@12345"
+}
+```
+
+Success response:
+
+```json
+{
+  "success": true,
+  "message": "Registration successful",
+  "data": {
+    "user": {
+      "id": "clxuserid001",
+      "name": "Demo Staff",
+      "email": "staff@synexus.test",
+      "role": "STAFF",
+      "createdAt": "2026-07-15T10:00:00.000Z",
+      "updatedAt": "2026-07-15T10:00:00.000Z"
+    }
+  }
+}
+```
+
+Conflict response:
+
+```json
+{
+  "success": false,
+  "message": "Email is already registered"
+}
+```
+
+Validation error response:
+
+```json
+{
+  "success": false,
+  "message": "Validation failed",
+  "errors": [
+    {
+      "field": "password",
+      "message": "Password must include at least one uppercase letter"
+    }
+  ]
+}
+```
+
+### Login
+
+`POST /api/auth/login`
+
+Request body:
+
+```json
+{
+  "email": "admin@synexus.test",
+  "password": "Admin@12345"
+}
+```
+
+Success response:
+
+```json
+{
+  "success": true,
+  "message": "Login successful",
+  "data": {
+    "user": {
+      "id": "clxuserid001",
+      "name": "Demo Admin",
+      "email": "admin@synexus.test",
+      "role": "ADMIN",
+      "createdAt": "2026-07-15T10:00:00.000Z",
+      "updatedAt": "2026-07-15T10:00:00.000Z"
+    }
+  }
+}
+```
+
+Invalid credentials response:
+
+```json
+{
+  "success": false,
+  "message": "Invalid email or password"
+}
+```
+
+### Get Current User
+
+`GET /api/auth/me`
+
+Requires the auth cookie from register/login.
+
+Success response:
+
+```json
+{
+  "success": true,
+  "message": "Authenticated user fetched successfully",
+  "data": {
+    "user": {
+      "id": "clxuserid001",
+      "name": "Demo Admin",
+      "email": "admin@synexus.test",
+      "role": "ADMIN",
+      "createdAt": "2026-07-15T10:00:00.000Z",
+      "updatedAt": "2026-07-15T10:00:00.000Z"
+    }
+  }
+}
+```
+
+Missing cookie response:
+
+```json
+{
+  "success": false,
+  "message": "Authentication required"
+}
+```
+
+Invalid or expired cookie response:
+
+```json
+{
+  "success": false,
+  "message": "Invalid or expired session"
+}
+```
+
+### Logout
+
+`POST /api/auth/logout`
+
+Requires the auth cookie from register/login.
+
+Success response:
+
+```json
+{
+  "success": true,
+  "message": "Logout successful"
+}
+```
 
 Sample seeded test account:
 
@@ -37,7 +188,7 @@ Password: Admin@12345
 Role: ADMIN
 ```
 
-These endpoints are not implemented yet. Product routes remain unprotected until the authentication flow is completed in a later Week 2 step.
+Product routes remain unprotected until the authentication flow is connected to protected interfaces in a later Week 2 step.
 ## Product Endpoints
 
 | Method | Endpoint | Description |
