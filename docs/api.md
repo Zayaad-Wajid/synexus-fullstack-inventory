@@ -188,8 +188,18 @@ Password: Admin@12345
 Role: ADMIN
 ```
 
-Product routes remain unprotected until the authentication flow is connected to protected interfaces in a later Week 2 step.
+Product routes are protected. Login is required before accessing `/api/products`, and `DELETE /api/products/:id` requires the `ADMIN` role.
 ## Product Endpoints
+
+Product endpoints are protected by cookie-based JWT authentication. Login through `POST /api/auth/login` before calling `/api/products`. The JWT is sent automatically by the browser or API client through the `httpOnly` cookie.
+
+Access rules:
+
+- `GET /api/products`: authenticated users only
+- `GET /api/products/:id`: authenticated users only
+- `POST /api/products`: authenticated users only
+- `PATCH /api/products/:id`: authenticated users only
+- `DELETE /api/products/:id`: `ADMIN` users only
 
 | Method | Endpoint | Description |
 | --- | --- | --- |
@@ -197,7 +207,7 @@ Product routes remain unprotected until the authentication flow is connected to 
 | GET | `/products/:id` | Fetch a single product by ID. |
 | POST | `/products` | Create a product. |
 | PATCH | `/products/:id` | Update a product. |
-| DELETE | `/products/:id` | Delete a product. |
+| DELETE | `/products/:id` | Delete a product. ADMIN role required. |
 
 Product prices are stored as numeric Decimal values in PostgreSQL and displayed as PKR on the frontend.
 
@@ -206,6 +216,44 @@ Product prices are stored as numeric Decimal values in PostgreSQL and displayed 
 - `IN_STOCK`
 - `LOW_STOCK`
 - `OUT_OF_STOCK`
+
+## Product Authorization Errors
+
+Unauthenticated product request:
+
+```json
+{
+  "success": false,
+  "message": "Authentication required"
+}
+```
+
+Invalid or expired session:
+
+```json
+{
+  "success": false,
+  "message": "Invalid or expired session"
+}
+```
+
+STAFF user attempting to delete a product:
+
+```json
+{
+  "success": false,
+  "message": "You do not have permission to perform this action"
+}
+```
+
+ADMIN user deleting a product succeeds:
+
+```json
+{
+  "success": true,
+  "message": "Product deleted successfully"
+}
+```
 
 ## Create Product
 

@@ -199,7 +199,25 @@ Postman testing notes:
 5. Send `GET http://localhost:5000/api/auth/me` using the same Postman cookie jar to verify session persistence.
 6. Send `POST http://localhost:5000/api/auth/logout` to clear the auth cookie.
 
-Product routes are intentionally still unprotected in this step. Protected interfaces will be added in a later Week 2 step.
+Product API routes now require authentication. Read/create/update product routes require any logged-in user, while deleting products requires the ADMIN role.
+
+## Week 2 Protected API Testing
+
+Product routes are protected by the JWT httpOnly cookie.
+
+1. Try `GET http://localhost:5000/api/products` before login and expect `401 Authentication required`.
+2. Login with the seeded admin account:
+
+```text
+Email: admin@synexus.test
+Password: Admin@12345
+```
+
+3. Retry `GET http://localhost:5000/api/products` with the same Postman cookie jar and expect success.
+4. Register or login as a STAFF user, then try `DELETE http://localhost:5000/api/products/:id` and expect `403 You do not have permission to perform this action`.
+5. Login as the ADMIN user and retry the delete request. ADMIN users can delete products.
+
+In browsers and API clients, cookies/credentials must be included with protected requests.
 ## API Documentation
 
 Full API documentation is available in `docs/api.md`.
@@ -212,7 +230,7 @@ Product endpoints:
 | GET | `/api/products/:id` | Fetch one product |
 | POST | `/api/products` | Create a product |
 | PATCH | `/api/products/:id` | Update a product |
-| DELETE | `/api/products/:id` | Delete a product |
+| DELETE | `/api/products/:id` | Delete a product, ADMIN only |
 
 ## Demo Notes
 

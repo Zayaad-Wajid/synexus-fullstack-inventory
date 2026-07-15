@@ -7,6 +7,7 @@ import {
   getProducts,
   updateProduct,
 } from "../controllers/productController.js";
+import { requireAuth, requireRole } from "../middleware/authMiddleware.js";
 import { validateRequest } from "../middleware/validateRequest.js";
 import {
   createProductSchema,
@@ -15,10 +16,12 @@ import {
 
 const router = Router();
 
+router.use(requireAuth);
+
 router.get("/", getProducts);
 router.get("/:id", getProduct);
 router.post("/", validateRequest(createProductSchema), createProduct);
 router.patch("/:id", validateRequest(updateProductSchema), updateProduct);
-router.delete("/:id", deleteProduct);
+router.delete("/:id", requireRole("ADMIN"), deleteProduct);
 
 export default router;
