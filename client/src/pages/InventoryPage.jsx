@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 
 import {
   createProduct,
@@ -14,6 +15,9 @@ import ProductTable from "../components/ProductTable";
 import StatCard from "../components/StatCard";
 import { useAuth } from "../context/AuthContext";
 
+const SESSION_EXPIRED_MESSAGE = "Your session has expired. Please log in again.";
+const FORBIDDEN_MESSAGE = "You do not have permission to perform this action.";
+
 function SuccessMessage({ message }) {
   if (!message) {
     return null;
@@ -26,6 +30,30 @@ function SuccessMessage({ message }) {
   );
 }
 
+function InventoryError({ message }) {
+  if (!message) {
+    return null;
+  }
+
+  const isSessionExpired = message === SESSION_EXPIRED_MESSAGE;
+
+  return (
+    <div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <span>{message}</span>
+        {isSessionExpired ? (
+          <Link
+            to="/login"
+            className="inline-flex min-h-9 items-center justify-center rounded-md bg-red-700 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-red-800"
+          >
+            Go to login
+          </Link>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
 function InventoryPage() {
   const { user } = useAuth();
   const [products, setProducts] = useState([]);
@@ -34,6 +62,7 @@ function InventoryPage() {
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [editingProduct, setEditingProduct] = useState(null);
+  const canDeleteProducts = user?.role === "ADMIN";
 
   const stats = useMemo(
     () => ({
@@ -118,6 +147,11 @@ function InventoryPage() {
   }
 
   async function handleDeleteProduct(productId) {
+    if (!canDeleteProducts) {
+      setError(FORBIDDEN_MESSAGE);
+      return;
+    }
+
     const confirmed = window.confirm("Delete this product from inventory?");
 
     if (!confirmed) {
@@ -167,7 +201,7 @@ function InventoryPage() {
             <StatCard label="Out of Stock" value={stats.outOfStock} />
           </section>
 
-          <ErrorMessage message={error} />
+          <InventoryError message={error} />
           <SuccessMessage message={successMessage} />
 
           <ProductForm
@@ -188,6 +222,7 @@ function InventoryPage() {
               onEdit={handleEditProduct}
               onDelete={handleDeleteProduct}
               isLoading={isLoading}
+              canDelete={canDeleteProducts}
             />
           </section>
         </div>

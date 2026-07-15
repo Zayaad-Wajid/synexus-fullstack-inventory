@@ -24,6 +24,8 @@ A professional full-stack inventory management project built for an internship e
 - Frontend creates, updates, deletes, and fetches products through the backend API
 - Week 2 login and registration screens use centralized AuthContext state and rely on httpOnly cookies for session storage
 - Session persistence after refresh is restored with `GET /api/auth/me`
+- Frontend routes protect `/inventory` and redirect signed-out users to `/login`
+- STAFF users can create and edit products, while delete is disabled because it requires ADMIN
 
 Product prices are stored as numeric Prisma Decimal values and displayed as PKR on the frontend.
 
@@ -199,17 +201,28 @@ Password: Admin@12345
 Role: ADMIN
 ```
 
-Session persistence after refresh through `GET /api/auth/me` is implemented. Protected frontend route guards are planned for the next Week 2 step.
+Session persistence after refresh through `GET /api/auth/me` is implemented. Frontend route guards protect `/inventory`, keep authenticated users away from auth pages, and preserve the originally requested route for login redirects.
 
-## Protected API Testing
+## Protected Route And API Testing
 
-Product routes are protected by the JWT httpOnly cookie.
+Product routes are protected by the JWT httpOnly cookie, and the frontend protects `/inventory` through AuthContext.
 
-1. Try `GET http://localhost:5000/api/products` before login and expect `401 Authentication required`.
-2. Login with the seeded admin account.
-3. Retry `GET http://localhost:5000/api/products` with the same browser or API client cookie jar and expect success.
-4. Register or login as a STAFF user, then try `DELETE http://localhost:5000/api/products/:id` and expect `403 You do not have permission to perform this action`.
-5. Login as the ADMIN user and retry the delete request. ADMIN users can delete products.
+1. Visit `http://localhost:5173/inventory` while logged out and expect a redirect to `/login`.
+2. Login with the seeded admin account:
+
+```text
+Email: admin@synexus.test
+Password: Admin@12345
+```
+
+3. Confirm the app returns to the originally requested page or defaults to `/inventory`.
+4. Refresh `/inventory` and confirm the user remains signed in through `GET /api/auth/me`.
+5. Logout and confirm visiting `/inventory` redirects back to `/login`.
+6. Register or login as a STAFF user and confirm the Delete button is disabled in the product table.
+7. In an API client, try `DELETE http://localhost:5000/api/products/:id` as STAFF and expect `403 You do not have permission to perform this action`.
+8. Login as the ADMIN user and confirm delete is allowed.
+
+The JWT remains in the httpOnly cookie and is never stored in `localStorage` or `sessionStorage`.
 
 ## Verify Session And CRUD Persistence
 
@@ -253,7 +266,7 @@ Screenshot placeholders are tracked in `docs/screenshots/README.md`.
 - CORS configuration: backend uses `CLIENT_URL` and supports credentials for httpOnly cookie auth
 - State management: inventory page tracks products, loading, submitting, error, success, and editing state; AuthContext tracks user, auth loading, auth errors, and session actions
 - Database integration: Prisma schema, migrations, seed data, PostgreSQL Docker service, and DB health endpoint are included
-- Authentication: JWT cookie flow, login/register screens, AuthContext session persistence, logout flow, sample account, and protected backend product routes are included
+- Authentication: JWT cookie flow, login/register screens, AuthContext session persistence, protected frontend routes, 401/403 handling, logout flow, sample account, and protected backend product routes are included
 
 ## Common Troubleshooting
 

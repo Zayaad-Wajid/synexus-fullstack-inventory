@@ -26,48 +26,54 @@ npm run dev
 
 ## Week 2 Authentication Walkthrough
 
-1. Open the login page.
+1. Open the protected inventory page while logged out.
 
 ```text
-http://localhost:5173/login
+http://localhost:5173/inventory
 ```
 
-2. Sign in with the seeded admin account.
+2. Confirm the app redirects to `/login` and preserves the requested route.
+
+3. Sign in with the seeded admin account.
 
 ```text
 Email: admin@synexus.test
 Password: Admin@12345
 ```
 
-3. Confirm successful login redirects to the inventory page.
+4. Confirm successful login returns to the inventory page.
 
 ```text
 http://localhost:5173/inventory
 ```
 
-4. Confirm the header shows the signed-in user name, email, role, and Logout button.
+5. Confirm the header shows the signed-in user name, email, role, and Logout button.
 
-5. Refresh the browser page.
+6. Refresh the browser page.
 
-6. Confirm the user remains signed in because AuthContext restored the session with `GET /api/auth/me`.
+7. Confirm the user remains signed in because AuthContext restored the session with `GET /api/auth/me`.
 
-7. Confirm the inventory list still loads through protected API requests using the httpOnly cookie.
+8. Confirm the inventory list still loads through protected API requests using the httpOnly cookie.
 
-8. Click Logout.
+9. Click Logout.
 
-9. Confirm the app navigates to `/login` and the user state clears.
+10. Confirm the app navigates to `/login` and `/inventory` is blocked again.
 
-10. Open the registration page.
+11. Open the registration page.
 
 ```text
 http://localhost:5173/register
 ```
 
-11. Register a new staff account with a valid name, email, and password.
+12. Register a new staff account with a valid name, email, and password.
 
-12. Confirm successful registration redirects to the inventory page and the header shows the new user.
+13. Confirm successful registration redirects to the inventory page and the header shows the new user.
 
-13. In an API client, use the staff account to try `DELETE /api/products/:id` and confirm the backend returns `403` because delete requires ADMIN.
+14. Confirm the Delete button is disabled for the STAFF user.
+
+15. In an API client, use the staff account to try `DELETE /api/products/:id` and confirm the backend returns `403` because delete requires ADMIN.
+
+16. Login as the seeded ADMIN account and confirm Delete is enabled and works.
 
 ## Week 1 CRUD Walkthrough
 
@@ -107,6 +113,8 @@ Description: Ergonomic wireless mouse
 
 - Login and registration screens with validation and readable errors
 - AuthContext restores sessions after refresh with `GET /api/auth/me`
+- Protected frontend routes redirect logged-out users to `/login`
+- 401 session errors and 403 permission errors are displayed clearly
 - Logout clears the httpOnly cookie through the backend and clears frontend user state
 - JWT stored in an httpOnly cookie, not browser storage
 - Protected backend product routes using cookie credentials

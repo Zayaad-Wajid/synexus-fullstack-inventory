@@ -12,6 +12,11 @@ const apiClient = axios.create({
 });
 
 export function normalizeApiError(error) {
+  if (error?.normalizedMessage) {
+    return error.normalizedMessage;
+  }
+
+  const status = error.response?.status;
   const data = error.response?.data;
 
   if (Array.isArray(data?.errors) && data.errors.length > 0) {
@@ -20,8 +25,16 @@ export function normalizeApiError(error) {
       .join(" ");
   }
 
-  if (data?.message === "Authentication required") {
-    return "Please log in to view inventory.";
+  if (status === 401) {
+    if (data?.message && !["Authentication required", "Invalid or expired session"].includes(data.message)) {
+      return data.message;
+    }
+
+    return "Your session has expired. Please log in again.";
+  }
+
+  if (status === 403) {
+    return data?.message || "You do not have permission to perform this action.";
   }
 
   if (data?.message) {
@@ -34,6 +47,14 @@ export function normalizeApiError(error) {
 
   return error.message || "Something went wrong. Please try again.";
 }
+
+apiClient.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    error.normalizedMessage = normalizeApiError(error);
+    return Promise.reject(error);
+  }
+);
 
 export { API_BASE_URL };
 export default apiClient;

@@ -188,10 +188,10 @@ Password: Admin@12345
 Role: ADMIN
 ```
 
-Product routes are protected. Login is required before accessing `/api/products`, and `DELETE /api/products/:id` requires the `ADMIN` role.
+Product routes are protected. Login is required before accessing `/api/products`, the frontend sends the httpOnly cookie with `withCredentials: true`, and `DELETE /api/products/:id` requires the `ADMIN` role.
 ## Product Endpoints
 
-Product endpoints are protected by cookie-based JWT authentication. Login through `POST /api/auth/login` before calling `/api/products`. The JWT is sent automatically by the browser or API client through the `httpOnly` cookie.
+Product endpoints are protected by cookie-based JWT authentication. Login through `POST /api/auth/login` before calling `/api/products`. The JWT is sent automatically by the browser or API client through the `httpOnly` cookie. Frontend route guards also require an authenticated AuthContext session before rendering `/inventory`.
 
 Access rules:
 

@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 
 import AuthCard from "../components/AuthCard";
 import ErrorMessage from "../components/ErrorMessage";
@@ -31,18 +31,28 @@ function validateLogin(formData) {
   return errors;
 }
 
+function getRedirectTarget(from) {
+  if (!from?.pathname || ["/login", "/register"].includes(from.pathname)) {
+    return "/inventory";
+  }
+
+  return `${from.pathname}${from.search || ""}${from.hash || ""}`;
+}
+
 function LoginPage() {
+  const location = useLocation();
   const navigate = useNavigate();
   const { authError, clearAuthError, isAuthenticated, login } = useAuth();
   const [formData, setFormData] = useState(initialFormData);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const redirectTo = useMemo(() => getRedirectTarget(location.state?.from), [location.state?.from]);
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate("/inventory", { replace: true });
+      navigate(redirectTo, { replace: true });
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, redirectTo]);
 
   useEffect(() => {
     clearAuthError();
@@ -80,7 +90,7 @@ function LoginPage() {
         email: formData.email.trim().toLowerCase(),
         password: formData.password,
       });
-      navigate("/inventory");
+      navigate(redirectTo, { replace: true });
     } catch {
       // AuthContext stores a readable authError for display.
     } finally {
