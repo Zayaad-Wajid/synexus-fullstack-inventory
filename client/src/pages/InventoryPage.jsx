@@ -7,10 +7,12 @@ import {
   getProducts,
   updateProduct,
 } from "../api/productApi";
+import AppHeader from "../components/AppHeader";
 import ErrorMessage from "../components/ErrorMessage";
 import ProductForm from "../components/ProductForm";
 import ProductTable from "../components/ProductTable";
 import StatCard from "../components/StatCard";
+import { useAuth } from "../context/AuthContext";
 
 function SuccessMessage({ message }) {
   if (!message) {
@@ -25,6 +27,7 @@ function SuccessMessage({ message }) {
 }
 
 function InventoryPage() {
+  const { user } = useAuth();
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -137,50 +140,59 @@ function InventoryPage() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-100 px-4 py-6 text-slate-950 sm:px-6 lg:px-8">
-      <div className="mx-auto flex max-w-7xl flex-col gap-6">
-        <header className="flex flex-col gap-2 border-b border-slate-200 pb-5">
-          <p className="text-sm font-semibold uppercase text-emerald-700">Synexus Inventory</p>
-          <div>
-            <h1 className="text-3xl font-bold text-slate-950 sm:text-4xl">Inventory Management</h1>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600 sm:text-base">
-              Create, update, and manage product records backed by the PostgreSQL inventory database.
-            </p>
-          </div>
-        </header>
+    <div className="min-h-screen bg-slate-100 text-slate-950">
+      <AppHeader />
 
-        <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <StatCard label="Total Products" value={stats.total} />
-          <StatCard label="In Stock" value={stats.inStock} />
-          <StatCard label="Low Stock" value={stats.lowStock} />
-          <StatCard label="Out of Stock" value={stats.outOfStock} />
-        </section>
+      <main className="px-4 py-6 sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-7xl flex-col gap-6">
+          <header className="flex flex-col gap-2 border-b border-slate-200 pb-5">
+            <p className="text-sm font-semibold uppercase text-emerald-700">Synexus Inventory</p>
+            <div>
+              <h1 className="text-3xl font-bold text-slate-950 sm:text-4xl">Inventory Management</h1>
+              <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600 sm:text-base">
+                Create, update, and manage product records backed by the PostgreSQL inventory database.
+              </p>
+              {user ? (
+                <p className="mt-2 text-sm font-medium text-slate-700">
+                  Signed in as {user.name || user.email}
+                </p>
+              ) : null}
+            </div>
+          </header>
 
-        <ErrorMessage message={error} />
-        <SuccessMessage message={successMessage} />
+          <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <StatCard label="Total Products" value={stats.total} />
+            <StatCard label="In Stock" value={stats.inStock} />
+            <StatCard label="Low Stock" value={stats.lowStock} />
+            <StatCard label="Out of Stock" value={stats.outOfStock} />
+          </section>
 
-        <ProductForm
-          onSubmit={handleSubmitProduct}
-          isSubmitting={isSubmitting}
-          editingProduct={editingProduct}
-          onCancelEdit={handleCancelEdit}
-        />
+          <ErrorMessage message={error} />
+          <SuccessMessage message={successMessage} />
 
-        <section className="flex flex-col gap-4">
-          <div>
-            <h2 className="text-lg font-semibold text-slate-950">Products</h2>
-            <p className="text-sm text-slate-600">Review current stock levels and supplier details.</p>
-          </div>
-
-          <ProductTable
-            products={products}
-            onEdit={handleEditProduct}
-            onDelete={handleDeleteProduct}
-            isLoading={isLoading}
+          <ProductForm
+            onSubmit={handleSubmitProduct}
+            isSubmitting={isSubmitting}
+            editingProduct={editingProduct}
+            onCancelEdit={handleCancelEdit}
           />
-        </section>
-      </div>
-    </main>
+
+          <section className="flex flex-col gap-4">
+            <div>
+              <h2 className="text-lg font-semibold text-slate-950">Products</h2>
+              <p className="text-sm text-slate-600">Review current stock levels and supplier details.</p>
+            </div>
+
+            <ProductTable
+              products={products}
+              onEdit={handleEditProduct}
+              onDelete={handleDeleteProduct}
+              isLoading={isLoading}
+            />
+          </section>
+        </div>
+      </main>
+    </div>
   );
 }
 

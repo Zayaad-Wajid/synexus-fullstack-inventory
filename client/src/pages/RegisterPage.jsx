@@ -1,11 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-import { normalizeApiError } from "../api/apiClient";
-import { registerUser } from "../api/authApi";
 import AuthCard from "../components/AuthCard";
 import ErrorMessage from "../components/ErrorMessage";
 import FormInput from "../components/FormInput";
+import { useAuth } from "../context/AuthContext";
 
 const initialFormData = {
   name: "",
@@ -50,10 +49,20 @@ function validateRegister(formData) {
 
 function RegisterPage() {
   const navigate = useNavigate();
+  const { authError, clearAuthError, isAuthenticated, register } = useAuth();
   const [formData, setFormData] = useState(initialFormData);
   const [errors, setErrors] = useState({});
-  const [apiError, setApiError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/inventory", { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
+
+  useEffect(() => {
+    clearAuthError();
+  }, [clearAuthError]);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -62,6 +71,10 @@ function RegisterPage() {
 
     if (errors[name]) {
       setErrors((currentErrors) => ({ ...currentErrors, [name]: undefined }));
+    }
+
+    if (authError) {
+      clearAuthError();
     }
   }
 
@@ -76,17 +89,17 @@ function RegisterPage() {
     }
 
     setIsSubmitting(true);
-    setApiError("");
+    clearAuthError();
 
     try {
-      await registerUser({
+      await register({
         name: formData.name.trim(),
         email: formData.email.trim().toLowerCase(),
         password: formData.password,
       });
       navigate("/inventory");
-    } catch (error) {
-      setApiError(normalizeApiError(error));
+    } catch {
+      // AuthContext stores a readable authError for display.
     } finally {
       setIsSubmitting(false);
     }
@@ -106,7 +119,7 @@ function RegisterPage() {
       }
     >
       <form onSubmit={handleSubmit} className="space-y-4">
-        <ErrorMessage message={apiError} />
+        <ErrorMessage message={authError} />
 
         <FormInput
           label="Name"

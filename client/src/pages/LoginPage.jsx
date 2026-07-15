@@ -1,11 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
-import { loginUser } from "../api/authApi";
-import { normalizeApiError } from "../api/apiClient";
 import AuthCard from "../components/AuthCard";
 import ErrorMessage from "../components/ErrorMessage";
 import FormInput from "../components/FormInput";
+import { useAuth } from "../context/AuthContext";
 
 const initialFormData = {
   email: "",
@@ -34,10 +33,20 @@ function validateLogin(formData) {
 
 function LoginPage() {
   const navigate = useNavigate();
+  const { authError, clearAuthError, isAuthenticated, login } = useAuth();
   const [formData, setFormData] = useState(initialFormData);
   const [errors, setErrors] = useState({});
-  const [apiError, setApiError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/inventory", { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
+
+  useEffect(() => {
+    clearAuthError();
+  }, [clearAuthError]);
 
   function handleChange(event) {
     const { name, value } = event.target;
@@ -46,6 +55,10 @@ function LoginPage() {
 
     if (errors[name]) {
       setErrors((currentErrors) => ({ ...currentErrors, [name]: undefined }));
+    }
+
+    if (authError) {
+      clearAuthError();
     }
   }
 
@@ -60,16 +73,16 @@ function LoginPage() {
     }
 
     setIsSubmitting(true);
-    setApiError("");
+    clearAuthError();
 
     try {
-      await loginUser({
+      await login({
         email: formData.email.trim().toLowerCase(),
         password: formData.password,
       });
       navigate("/inventory");
-    } catch (error) {
-      setApiError(normalizeApiError(error));
+    } catch {
+      // AuthContext stores a readable authError for display.
     } finally {
       setIsSubmitting(false);
     }
@@ -89,7 +102,7 @@ function LoginPage() {
       }
     >
       <form onSubmit={handleSubmit} className="space-y-4">
-        <ErrorMessage message={apiError} />
+        <ErrorMessage message={authError} />
 
         <FormInput
           label="Email"

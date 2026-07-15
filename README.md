@@ -22,7 +22,8 @@ A professional full-stack inventory management project built for an internship e
 - Product CRUD API backed by PostgreSQL and Prisma
 - React inventory page with form validation, loading/error/success states, edit mode, delete confirmation, and PKR currency display
 - Frontend creates, updates, deletes, and fetches products through the backend API
-- Week 2 login and registration screens call the backend auth API and rely on httpOnly cookies for session storage
+- Week 2 login and registration screens use centralized AuthContext state and rely on httpOnly cookies for session storage
+- Session persistence after refresh is restored with `GET /api/auth/me`
 
 Product prices are stored as numeric Prisma Decimal values and displayed as PKR on the frontend.
 
@@ -174,6 +175,8 @@ Open `http://localhost:5173/login`, sign in, and use the inventory page.
 
 Authentication uses JWTs stored in an httpOnly cookie named `synexus_token`. The frontend does not store the JWT in `localStorage` or `sessionStorage`; Axios sends the cookie automatically with API requests using `withCredentials: true`.
 
+Frontend auth state is centralized in `AuthContext`. On app load, the client calls `GET /api/auth/me` to restore the signed-in user from the httpOnly cookie after refresh. Logout calls `POST /api/auth/logout`, clears the cookie on the backend, and clears the user from frontend state.
+
 Implemented backend endpoints:
 
 | Method | Endpoint | Purpose |
@@ -196,7 +199,7 @@ Password: Admin@12345
 Role: ADMIN
 ```
 
-Session persistence after refresh through `GET /api/auth/me` and protected frontend route guards are planned for the next Week 2 step.
+Session persistence after refresh through `GET /api/auth/me` is implemented. Protected frontend route guards are planned for the next Week 2 step.
 
 ## Protected API Testing
 
@@ -208,16 +211,20 @@ Product routes are protected by the JWT httpOnly cookie.
 4. Register or login as a STAFF user, then try `DELETE http://localhost:5000/api/products/:id` and expect `403 You do not have permission to perform this action`.
 5. Login as the ADMIN user and retry the delete request. ADMIN users can delete products.
 
-## Verify CRUD Persistence
+## Verify Session And CRUD Persistence
 
 1. Open the frontend at `http://localhost:5173/login`.
 2. Sign in with the sample admin account.
-3. Create a product with a name, category, quantity, unit price in PKR, supplier, status, and description.
-4. Confirm the product appears in the table after submission.
-5. Refresh the browser.
-6. Confirm the product still appears, proving it was persisted in PostgreSQL.
-7. Edit the product and confirm the updated values appear.
-8. Delete the product and confirm it is removed from the refreshed list.
+3. Confirm you are redirected to `/inventory` and the header shows the signed-in user.
+4. Refresh the browser.
+5. Confirm the user remains signed in because `GET /api/auth/me` restored the session from the httpOnly cookie.
+6. Create a product with a name, category, quantity, unit price in PKR, supplier, status, and description.
+7. Confirm the product appears in the table after submission.
+8. Refresh the browser.
+9. Confirm the product still appears, proving it was persisted in PostgreSQL.
+10. Edit the product and confirm the updated values appear.
+11. Delete the product as ADMIN and confirm it is removed from the refreshed list.
+12. Click Logout and confirm the user state clears and the app navigates to `/login`.
 
 ## API Documentation
 
@@ -244,9 +251,9 @@ Screenshot placeholders are tracked in `docs/screenshots/README.md`.
 - Repository structure: clear `client`, `server`, `docs`, Docker, and env example separation
 - API consumption: frontend API calls are isolated in `client/src/api`
 - CORS configuration: backend uses `CLIENT_URL` and supports credentials for httpOnly cookie auth
-- State management: inventory page tracks products, loading, submitting, error, success, and editing state
+- State management: inventory page tracks products, loading, submitting, error, success, and editing state; AuthContext tracks user, auth loading, auth errors, and session actions
 - Database integration: Prisma schema, migrations, seed data, PostgreSQL Docker service, and DB health endpoint are included
-- Authentication: JWT cookie flow, login/register screens, sample account, and protected backend product routes are included
+- Authentication: JWT cookie flow, login/register screens, AuthContext session persistence, logout flow, sample account, and protected backend product routes are included
 
 ## Common Troubleshooting
 
@@ -292,9 +299,9 @@ Also confirm the backend `CLIENT_URL` matches the frontend origin:
 CLIENT_URL=http://localhost:5173
 ```
 
-### Protected requests return 401 after login
+### Protected requests return 401 after login or refresh
 
-Make sure frontend requests use the shared Axios client in `client/src/api/apiClient.js`, which includes `withCredentials: true`.
+Make sure frontend requests use the shared Axios client in `client/src/api/apiClient.js`, which includes `withCredentials: true`. Also confirm `GET /api/auth/me` succeeds in the browser after login.
 
 ### Prisma Client is out of date
 

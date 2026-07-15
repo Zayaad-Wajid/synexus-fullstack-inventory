@@ -45,19 +45,29 @@ Password: Admin@12345
 http://localhost:5173/inventory
 ```
 
-4. Confirm the inventory list loads through protected API requests using the httpOnly cookie.
+4. Confirm the header shows the signed-in user name, email, role, and Logout button.
 
-5. Open the registration page.
+5. Refresh the browser page.
+
+6. Confirm the user remains signed in because AuthContext restored the session with `GET /api/auth/me`.
+
+7. Confirm the inventory list still loads through protected API requests using the httpOnly cookie.
+
+8. Click Logout.
+
+9. Confirm the app navigates to `/login` and the user state clears.
+
+10. Open the registration page.
 
 ```text
 http://localhost:5173/register
 ```
 
-6. Register a new staff account with a valid name, email, and password.
+11. Register a new staff account with a valid name, email, and password.
 
-7. Confirm successful registration redirects to the inventory page.
+12. Confirm successful registration redirects to the inventory page and the header shows the new user.
 
-8. In an API client, use the staff account to try `DELETE /api/products/:id` and confirm the backend returns `403` because delete requires ADMIN.
+13. In an API client, use the staff account to try `DELETE /api/products/:id` and confirm the backend returns `403` because delete requires ADMIN.
 
 ## Week 1 CRUD Walkthrough
 
@@ -96,6 +106,8 @@ Description: Ergonomic wireless mouse
 ## Demo Focus
 
 - Login and registration screens with validation and readable errors
+- AuthContext restores sessions after refresh with `GET /api/auth/me`
+- Logout clears the httpOnly cookie through the backend and clears frontend user state
 - JWT stored in an httpOnly cookie, not browser storage
 - Protected backend product routes using cookie credentials
 - Frontend form submission through Axios
